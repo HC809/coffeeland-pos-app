@@ -18,6 +18,7 @@ import Image from '@/components/ui/image';
 import { siteSettings } from '@/data/static/site-settings';
 import { removeTaxInfo } from '@/store/taxInfoSlice';
 import { setCloseShift } from '@/store/shiftInfoSlice';
+import ThemeSwitcher from '@/components/ui/theme-switcher';
 
 const AuthorizedMenuItems = [
   {

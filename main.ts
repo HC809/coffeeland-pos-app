@@ -11,7 +11,7 @@ const createMainWindow = () => {
     },
   });
 
-  const startURL = 'https://coffeeland.vercel.app/login';
+  const startURL = 'http://localhost:3000';
 
   mainWindow.loadURL(startURL);
 

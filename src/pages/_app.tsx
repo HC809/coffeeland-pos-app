@@ -33,7 +33,7 @@ function CustomApp({ Component, pageProps }: AppPropsWithLayout) {
       <PersistGate loading={null} persistor={persistor}>
         <ThemeProvider
           attribute="class"
-          defaultTheme="dark"
+          defaultTheme="light"
           enableSystem={false}
         >
           <CartProvider>
