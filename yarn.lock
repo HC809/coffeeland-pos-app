@@ -3503,6 +3503,11 @@ electron-osx-sign@^0.6.0:
     minimist "^1.2.0"
     plist "^3.0.1"
 
+electron-pos-printer@^1.2.4:
+  version "1.2.4"
+  resolved "https://registry.yarnpkg.com/electron-pos-printer/-/electron-pos-printer-1.2.4.tgz#f57a5fac2b4f189eed42afb4479303ccb82116bd"
+  integrity sha512-cO4wF3KhrE/6aAokZmPPlLMkCygsPfNv0/CkBsAXYaeN5TlfbQ9MF99P5UHxF++JBPcB6TCuog2DzNW0UF21sQ==
+
 electron-publish@23.0.9:
   version "23.0.9"
   resolved "https://registry.yarnpkg.com/electron-publish/-/electron-publish-23.0.9.tgz#5b098dafab5d830b7c8bcd18b5a499164c51fa6b"

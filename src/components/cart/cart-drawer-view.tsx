@@ -1,23 +1,45 @@
-import { useState } from 'react';
+import React from 'react';
+import { useState, useEffect } from 'react';
 import Button from '@/components/ui/button';
 import Scrollbar from '@/components/ui/scrollbar';
 import CartItemList from '@/components/cart/cart-item-list';
 import CartEmpty from '@/components/cart/cart-empty';
 import usePrice from '@/lib/hooks/use-price';
 import { useAppSelector } from '@/hooks/reduxHooks';
-import { selectNewOrder } from '@/store/newOrderSlice';
+import {
+  selectNewOrder,
+  selectNewOrderDetailForInvoice,
+} from '@/store/newOrderSlice';
 import { useModalAction } from '../modal-views/context';
 import { selectTaxInfo } from '../../store/taxInfoSlice';
 import toast from 'react-hot-toast';
+import { selectGeneralInfo } from '../../store/generalInfoSlice';
+const { ipcRenderer } = window.require('electron');
 
-export default function CartDrawerView() {
+interface InvoicePrintResponse {
+  success: boolean;
+  error: string;
+  message: string;
+}
+
+function CartDrawerView() {
   const { openModal } = useModalAction();
 
   const { newOrderInfo, newOrderAmounts, newOrderDetail } =
     useAppSelector(selectNewOrder);
 
-  const { activeInvoiceRange, pendingInvoiceRange } =
+  const newOrderDetailForInvoce = useAppSelector(
+    selectNewOrderDetailForInvoice
+  );
+
+  const { invoicePoint, activeInvoiceRange, pendingInvoiceRange } =
     useAppSelector(selectTaxInfo);
+
+  const { companyInfo } = useAppSelector(selectGeneralInfo);
+
+  useEffect(() => {
+    return () => {};
+  }, []);
 
   const validateTaxInfo = async () => {
     const {
@@ -27,7 +49,7 @@ export default function CartDrawerView() {
     } = activeInvoiceRange;
 
     if (activeActualNumber < activeEndNumber) {
-      if (activeLimitDate < new Date()) {
+      if (activeLimitDate && activeLimitDate < new Date()) {
         toast.error(`La fecha límite de emisión fue el ${activeLimitDate}.`);
       } else {
         openModal('NEW_ORDER_VIEW');
@@ -41,7 +63,7 @@ export default function CartDrawerView() {
         } = pendingInvoiceRange;
 
         if (pendingActualNunber < pendingEndNumber) {
-          if (pendingLimitDate < new Date())
+          if (pendingLimitDate && pendingLimitDate < new Date())
             toast.error(
               `La fecha límite de emisión fue el ${activeLimitDate}.`
             );
@@ -76,33 +98,35 @@ export default function CartDrawerView() {
     amount: subtotal,
   });
 
-  const { price: totalExemptAmount } = usePrice({
-    amount: totalExempt,
+  ipcRenderer.on('print-invoice-reply', (_event: any, arg: any) => {
+    console.log(arg); // prints "pong" in the DevTools console
   });
 
-  const { price: totalExoneratedAmount } = usePrice({
-    amount: totalExonerated,
-  });
-
-  const { price: totalTax15Amount } = usePrice({
-    amount: totalTax15,
-  });
-
-  const { price: totalTax18Amount } = usePrice({
-    amount: totalTax18,
-  });
-
-  const { price: totalTaxAmount } = usePrice({
-    amount: totalTax15 + totalTax18,
-  });
-
-  function handleCheckout() {
+  const handleCheckout = async () => {
     setLoading(true);
-    setTimeout(() => {
-      setLoading(false);
-      alert('Imprimir factura..');
-    }, 600);
-  }
+
+    const invoicePrintResponse: InvoicePrintResponse = await ipcRenderer.invoke(
+      'print-invoice',
+      {
+        companyInfo,
+        invoiceRange: activeInvoiceRange,
+        newOrderInfo,
+        newOrderAmounts,
+        newOrderProductDetail: newOrderDetailForInvoce,
+      }
+    );
+
+    setLoading(false);
+
+    if (invoicePrintResponse.success) {
+      alert(1);
+    } else {
+      toast.error(invoicePrintResponse.error, {
+        position: 'bottom-center',
+        duration: 5000,
+      });
+    }
+  };
   return (
     <>
       <div className="flex h-[70px] items-center justify-between py-2 px-5 sm:px-7">
@@ -161,15 +185,17 @@ export default function CartDrawerView() {
         </div>
         <div className="mt-3 md:mt-5">
           <Button
-            disabled={newOrderDetail.length === 0}
+            disabled={newOrderDetail.length === 0 || loading}
             isLoading={loading}
             onClick={() => handleCheckout()}
             className="w-full text-sm md:h-[52px]"
           >
-            Facturar
+            {!loading ? 'Facturar' : 'Imprimiendo Factura...'}
           </Button>
         </div>
       </div>
     </>
   );
 }
+
+export default CartDrawerView;

@@ -195,6 +195,18 @@ const newOrderSlice = createSlice({
 });
 
 export const selectNewOrder = (state: RootState) => state.newOrder;
+export const selectNewOrderDetailForInvoice = (state: RootState) =>
+  state.newOrder.newOrderDetail.map((item) => {
+    return {
+      productName: item.productName,
+      sellingPrice: item.sellingPrice,
+      priceBeforeTax: item.priceBeforeTax,
+      quantity: item.quantity,
+      taxAmount: item.taxAmount,
+      subtotal: item.subtotal,
+      total: item.total,
+    };
+  });
 
 export const {
   setNewOrderType,

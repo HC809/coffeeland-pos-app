@@ -29,7 +29,7 @@ export const generalInfoSlice = createSlice({
   },
 });
 
-export const selectGeneralInfo = (state: RootState) => state.taxInfo;
+export const selectGeneralInfo = (state: RootState) => state.generalInfo;
 
 export const { setCompanyInfo } = generalInfoSlice.actions;
 

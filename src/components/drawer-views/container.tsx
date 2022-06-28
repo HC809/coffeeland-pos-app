@@ -4,18 +4,17 @@ import { useRouter } from 'next/router';
 import { Dialog } from '@/components/ui/dialog';
 import { Transition } from '@/components/ui/transition';
 import { DRAWER_VIEW, useDrawer } from '@/components/drawer-views/context';
+
 const CartDrawerView = dynamic(
-  () => import('@/components/cart/cart-drawer-view')
+  () => {
+    return import('@/components/cart/cart-drawer-view');
+  },
+  { ssr: false }
 );
 const SidebarDrawerView = dynamic(() => import('@/layouts/_layout-sidebar'));
 
 function renderDrawerContent(view: DRAWER_VIEW | string) {
-  switch (view) {
-    case 'MOBILE_MENU':
-      return <SidebarDrawerView />;
-    default:
-      return <CartDrawerView />;
-  }
+  return <CartDrawerView />;
 }
 
 export default function DrawersContainer() {
