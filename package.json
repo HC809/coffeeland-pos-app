@@ -2,7 +2,9 @@
   "name": "@pixer/shop",
   "private": true,
   "version": "1.0.0",
+  "main": "./main.ts",
   "scripts": {
+    "electron": "electron .",
     "clean": "rimraf \"{node_modules,.next,.cache}\"",
     "dev": "next dev",
     "build": "next build",
@@ -27,6 +29,8 @@
     "classnames": "2.3.1",
     "crypto-js": "^4.1.1",
     "dayjs": "1.10.7",
+    "electron": "^19.0.6",
+    "electron-builder": "^23.1.0",
     "framer-motion": "6.2.3",
     "jotai": "1.6.0",
     "js-cookie": "3.0.1",
