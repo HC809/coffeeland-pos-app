@@ -22,8 +22,7 @@ const initialState: State = {
     startNumber: 0,
     endNumber: 0,
     actualNumber: 0,
-    limitDate: new Date(),
-
+    limitDate: null,
   },
   pendingInvoiceRange: null,
 };

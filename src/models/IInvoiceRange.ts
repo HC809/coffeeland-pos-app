@@ -4,5 +4,5 @@ export interface IInvoiceRange {
   startNumber: number;
   endNumber: number;
   actualNumber: number;
-  limitDate: Date;
+  limitDate: Date | null;
 }

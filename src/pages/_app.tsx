@@ -12,7 +12,7 @@ import { Provider } from 'react-redux';
 import { persistStore } from 'redux-persist';
 import store from '@/store/store';
 import { PersistGate } from 'redux-persist/lib/integration/react';
-import { CustomRouter } from './_router';
+import CustomRouter from './_router';
 
 // base css file
 import '@/assets/css/scrollbar.css';

@@ -4,16 +4,16 @@ import { RootState } from './store';
 
 export type State = {
   openShift: boolean;
-  openShiftDate: Date;
-  closeShiftDate: Date;
+  openShiftDate: Date | null;
+  closeShiftDate: Date | null;
   initCashFlow: number;
   endCashFlow: number;
 };
 
 const initialState: State = {
   openShift: false,
-  openShiftDate: new Date(),
-  closeShiftDate: new Date(),
+  openShiftDate: null,
+  closeShiftDate: null,
   initCashFlow: 0,
   endCashFlow: 0,
 };

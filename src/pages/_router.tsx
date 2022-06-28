@@ -16,7 +16,7 @@ interface Props {
   pageProps: any;
 }
 
-export const CustomRouter = ({ Component, pageProps }: Props) => {
+const CustomRouter = ({ Component, pageProps }: Props) => {
   const getLayout = Component.getLayout ?? ((page) => page);
 
   const auth = useAppSelector(selectAuth);
@@ -38,3 +38,5 @@ export const CustomRouter = ({ Component, pageProps }: Props) => {
     </>
   );
 };
+
+export default CustomRouter;
