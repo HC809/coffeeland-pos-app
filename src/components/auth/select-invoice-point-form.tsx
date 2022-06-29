@@ -154,6 +154,20 @@ export default function SelectInvoicePointForm() {
             ),
             { duration: 20000 }
           );
+        } else {
+          await dispatch(
+            setTaxInfo({
+              invoicePoint,
+              activeInvoiceRange: {
+                ...invoiceRangeInUse,
+                actualNumber: invoiceRangeInUse.startNumber,
+              },
+              pendingInvoiceRange: invoiceRangePending,
+            })
+          );
+          await dispatch(setCategories(categories));
+          await dispatch(setProducts(products));
+          await dispatch(setCompanyInfo(generalInfo));
         }
       } else {
         toast.error(<b>{errorMessage}</b>);

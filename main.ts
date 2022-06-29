@@ -46,6 +46,7 @@ app.on('window-all-closed', () => {
   }
 });
 
+//PRINT INVOICE
 ipcMain.handle('print-invoice', async (event, arg) => {
   const companyInfo = arg.companyInfo;
   const newOrderInfo = arg.newOrderInfo;

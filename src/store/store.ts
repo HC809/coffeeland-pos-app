@@ -23,6 +23,7 @@ import taxInfoReducer from './taxInfoSlice';
 import categoryReducer from './categoriesSlice';
 import productReducer from './productsSlice';
 import newOrderReducer from './newOrderSlice';
+import saleReducer from './salesSlice';
 import generalInfoReducer from './generalInfoSlice';
 
 const createNoopStorage = () => {
@@ -56,6 +57,7 @@ const persistConfig = {
     'taxInfo',
     'shiftInfo',
     'generalInfo',
+    'sale',
   ],
   timeout: undefined,
 };
@@ -67,6 +69,7 @@ const appReducer = combineReducers({
   newOrder: newOrderReducer,
   taxInfo: taxInfoReducer,
   shiftInfo: shiftInfoReducer,
+  sale: saleReducer,
   generalInfo: generalInfoReducer,
 });
 

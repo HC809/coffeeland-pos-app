@@ -8,6 +8,8 @@ import Scrollbar from '@/components/ui/scrollbar';
 import Copyright from '@/layouts/_copyright';
 import { BiStore } from 'react-icons/bi';
 import { FcCancel, FcViewDetails } from 'react-icons/fc';
+import { GrUnorderedList } from 'react-icons/gr';
+import { BiPrinter, BiInfoCircle } from 'react-icons/bi';
 import { BiEdit } from 'react-icons/bi';
 import Button from '@/components/ui/button';
 import { useModalAction } from '@/components/modal-views/context';
@@ -75,6 +77,30 @@ export function Sidebar({
               isCollapse={isCollapse}
               icon={<BiStore className="h-4 w-4 text-current" />}
             />
+            <NavLink
+              title={'Ventas'}
+              href={routes.sales}
+              isCollapse={isCollapse}
+              icon={<GrUnorderedList className="h-4 w-4 text-current" />}
+            />
+            <NavLink
+              title={'Inf. Fiscal'}
+              href={routes.taxInfo}
+              isCollapse={isCollapse}
+              icon={<BiInfoCircle className="h-4 w-4 text-current" />}
+            />
+            <NavLink
+              title={'Impresora'}
+              href={routes.configPrinter}
+              isCollapse={isCollapse}
+              icon={<BiPrinter className="h-4 w-4 text-current" />}
+            />
+            {/* <NavLink
+              title={'Actualizar Información'}
+              href={routes.productsSearch}
+              isCollapse={isCollapse}
+              icon={<BiStore className="h-4 w-4 text-current" />}
+            /> */}
           </nav>
 
           {newOrderInfo.started && (

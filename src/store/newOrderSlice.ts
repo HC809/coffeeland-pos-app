@@ -1,9 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import {
-  INewOrder,
-  INewOrderAmounts,
-  INewOrderDetail,
-} from '../models/INewOrder';
+import { IOrder, IOrderAmounts, IOrderDetail } from '../models/INewOrder';
 import { RootState } from './store';
 import { OrderType } from '../data/OrderTypes';
 
@@ -14,21 +10,32 @@ interface NewOrderType {
   ticketNumber: number;
 }
 
+interface NewOrderTaxInfo {
+  cai: string;
+  invoiceNumber: number;
+  limitDate: Date;
+  range: string;
+}
+
 interface NewOrderState {
-  newOrderInfo: INewOrder;
-  newOrderAmounts: INewOrderAmounts;
-  newOrderDetail: INewOrderDetail[];
+  newOrderInfo: IOrder;
+  newOrderAmounts: IOrderAmounts;
+  newOrderDetail: IOrderDetail[];
 }
 
 const initialState: NewOrderState = {
   newOrderInfo: {
     customerName: 'Consumidor Final',
     rtn: '',
+    cai: '',
     invoiceNumber: 0,
+    limitDate: null,
+    range: '',
     orderType: null,
     ticketNumber: null,
     started: false,
     finished: false,
+    date: null,
   },
   newOrderAmounts: {
     subtotal: 0,
@@ -43,8 +50,8 @@ const initialState: NewOrderState = {
 };
 
 const calculateTotalOrderAmounts = (
-  newOrderDetail: INewOrderDetail[]
-): INewOrderAmounts => {
+  newOrderDetail: IOrderDetail[]
+): IOrderAmounts => {
   let amounts = {
     subtotal: 0.0,
     totalTax: 0.0,
@@ -54,32 +61,32 @@ const calculateTotalOrderAmounts = (
   let totalExemptTax = 0;
   newOrderDetail
     .filter((item) => item.taxName === 'Exento')
-    .map((x: INewOrderDetail) => {
+    .map((x: IOrderDetail) => {
       totalExemptTax = totalExemptTax + x.sellingPrice;
     });
 
   let totalExoneratedTax = 0;
   newOrderDetail
     .filter((item) => item.taxName === 'Exonerado')
-    .map((x: INewOrderDetail) => {
+    .map((x: IOrderDetail) => {
       totalExoneratedTax = totalExoneratedTax + x.sellingPrice;
     });
 
   let totalTax15 = 0;
   newOrderDetail
     .filter((item) => item.taxName === 'ISV 15%')
-    .map((x: INewOrderDetail) => {
+    .map((x: IOrderDetail) => {
       totalTax15 = (totalTax15 + x.taxAmount) * x.quantity;
     });
 
   let totalTax18 = 0;
   newOrderDetail
     .filter((item) => item.taxName === 'ISV 18%')
-    .map((x: INewOrderDetail) => {
+    .map((x: IOrderDetail) => {
       totalTax18 = (totalTax18 + x.taxAmount) * x.quantity;
     });
 
-  newOrderDetail.map((item: INewOrderDetail) => {
+  newOrderDetail.map((item: IOrderDetail) => {
     amounts.subtotal += item.subtotal;
     amounts.totalTax += item.taxAmount;
     amounts.total += item.total;
@@ -96,10 +103,10 @@ const calculateTotalOrderAmounts = (
   };
 };
 
-export const incremenetProductQuantity = (product: INewOrderDetail) => {
+export const incremenetProductQuantity = (product: IOrderDetail) => {
   let newQuantity = product.quantity + 1;
 
-  let updatedProduct: INewOrderDetail = {
+  let updatedProduct: IOrderDetail = {
     ...product,
     quantity: newQuantity,
     subtotal: newQuantity * product.priceBeforeTax,
@@ -110,10 +117,10 @@ export const incremenetProductQuantity = (product: INewOrderDetail) => {
   return updatedProduct;
 };
 
-export const decrementProductQuantity = (product: INewOrderDetail) => {
+export const decrementProductQuantity = (product: IOrderDetail) => {
   let newQuantity = product.quantity - 1;
 
-  let updatedProduct: INewOrderDetail = {
+  let updatedProduct: IOrderDetail = {
     ...product,
     quantity: newQuantity,
     subtotal: newQuantity * product.priceBeforeTax,
@@ -133,19 +140,21 @@ const newOrderSlice = createSlice({
       state.newOrderInfo.customerName = action.payload.customerName;
       state.newOrderInfo.rtn = action.payload.rtn;
       state.newOrderInfo.ticketNumber = action.payload.ticketNumber;
+
       state.newOrderInfo.started = true;
     },
+    setNewOrderTaxInfo: (state, action: PayloadAction<NewOrderTaxInfo>) => {
+      state.newOrderInfo.cai = action.payload.cai;
+      state.newOrderInfo.invoiceNumber = action.payload.invoiceNumber;
+      state.newOrderInfo.limitDate = action.payload.limitDate;
+      state.newOrderInfo.range = action.payload.range;
+    },
     cancelNewOrder: (state) => {
-      state.newOrderInfo.orderType = initialState.newOrderInfo.orderType;
-      state.newOrderInfo.customerName = initialState.newOrderInfo.customerName;
-      state.newOrderInfo.rtn = initialState.newOrderInfo.rtn;
-      state.newOrderInfo.ticketNumber = initialState.newOrderInfo.ticketNumber;
-      state.newOrderInfo.started = false;
-
+      state.newOrderInfo = initialState.newOrderInfo;
       state.newOrderAmounts = initialState.newOrderAmounts;
       state.newOrderDetail = initialState.newOrderDetail;
     },
-    addProductToNewOrder: (state, action: PayloadAction<INewOrderDetail>) => {
+    addProductToNewOrder: (state, action: PayloadAction<IOrderDetail>) => {
       state.newOrderDetail.push(action.payload);
       state.newOrderAmounts = calculateTotalOrderAmounts(state.newOrderDetail);
     },
@@ -158,7 +167,7 @@ const newOrderSlice = createSlice({
     },
     incremenetProductQuantityFromNewOrder: (
       state,
-      action: PayloadAction<INewOrderDetail>
+      action: PayloadAction<IOrderDetail>
     ) => {
       let itemIndex = state.newOrderDetail.findIndex(
         (item) => item.productId === action.payload.productId
@@ -172,7 +181,7 @@ const newOrderSlice = createSlice({
     },
     decrementProductQuantityFromNewOrder: (
       state,
-      action: PayloadAction<INewOrderDetail>
+      action: PayloadAction<IOrderDetail>
     ) => {
       let item = state.newOrderDetail.find(
         (prod) => prod.productId === action.payload.productId
@@ -210,6 +219,7 @@ export const selectNewOrderDetailForInvoice = (state: RootState) =>
 
 export const {
   setNewOrderType,
+  setNewOrderTaxInfo,
   cancelNewOrder,
   addProductToNewOrder,
   removeProductFromNewOrder,

@@ -1,16 +1,20 @@
 import { OrderType } from '@/data/OrderTypes';
 
-export interface INewOrder {
+export interface IOrder {
   started: boolean;
   finished: boolean;
   orderType: OrderType | null;
+  cai: string;
   invoiceNumber: number;
+  limitDate: Date | null;
+  range: string;
   ticketNumber: number | null;
   customerName: string;
   rtn: string | null;
+  date: Date | null;
 }
 
-export interface INewOrderAmounts {
+export interface IOrderAmounts {
   subtotal: number;
   totalTax15: number;
   totalTax18: number;
@@ -20,7 +24,7 @@ export interface INewOrderAmounts {
   total: number;
 }
 
-export interface INewOrderDetail {
+export interface IOrderDetail {
   productId: number;
   productName: string;
   image?: string;

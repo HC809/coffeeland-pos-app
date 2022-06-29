@@ -1,7 +1,7 @@
 import usePrice from '@/lib/hooks/use-price';
 import Image from '@/components/ui/image';
 import placeholder from '@/assets/images/placeholders/product.svg';
-import { INewOrderDetail } from '../../models/INewOrder';
+import { IOrderDetail } from '../../models/INewOrder';
 import Counter from '../ui/counter';
 import { useAppDispatch } from '@/hooks/reduxHooks';
 import { useAppSelector } from '../../hooks/reduxHooks';
@@ -14,7 +14,7 @@ export default function CartItem({
   item,
   notAvailable,
 }: {
-  item: INewOrderDetail;
+  item: IOrderDetail;
   notAvailable?: boolean;
 }) {
   const { productName, productId, image } = item;

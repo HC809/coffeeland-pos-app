@@ -39,6 +39,7 @@
     "js-cookie": "3.0.1",
     "little-state-machine": "4.2.1",
     "lodash": "4.17.21",
+    "moment": "^2.29.3",
     "next": "12.1.0",
     "next-pwa": "5.4.4",
     "next-redux-wrapper": "^7.0.5",

@@ -5,16 +5,18 @@ import Scrollbar from '@/components/ui/scrollbar';
 import CartItemList from '@/components/cart/cart-item-list';
 import CartEmpty from '@/components/cart/cart-empty';
 import usePrice from '@/lib/hooks/use-price';
-import { useAppSelector } from '@/hooks/reduxHooks';
+import { useAppDispatch, useAppSelector } from '@/hooks/reduxHooks';
 import {
   selectNewOrder,
   selectNewOrderDetailForInvoice,
+  setNewOrderTaxInfo,
 } from '@/store/newOrderSlice';
 import { useModalAction } from '../modal-views/context';
 import { selectTaxInfo } from '../../store/taxInfoSlice';
 import toast from 'react-hot-toast';
 import { selectGeneralInfo } from '../../store/generalInfoSlice';
-const { ipcRenderer } = window.require('electron');
+import { toShortDate } from '../../helpers/functions/general';
+//const { ipcRenderer } = window.require('electron');
 
 interface InvoicePrintResponse {
   success: boolean;
@@ -24,6 +26,8 @@ interface InvoicePrintResponse {
 
 function CartDrawerView() {
   const { openModal } = useModalAction();
+
+  const dispatch = useAppDispatch();
 
   const { newOrderInfo, newOrderAmounts, newOrderDetail } =
     useAppSelector(selectNewOrder);
@@ -43,6 +47,7 @@ function CartDrawerView() {
 
   const validateTaxInfo = async () => {
     const {
+      cai: activeCai,
       actualNumber: activeActualNumber,
       endNumber: activeEndNumber,
       limitDate: activeLimitDate,
@@ -52,6 +57,14 @@ function CartDrawerView() {
       if (activeLimitDate && activeLimitDate < new Date()) {
         toast.error(`La fecha límite de emisión fue el ${activeLimitDate}.`);
       } else {
+        dispatch(
+          setNewOrderTaxInfo({
+            invoiceNumber: activeActualNumber,
+            limitDate: activeLimitDate!,
+            cai: activeCai,
+            range: '',
+          })
+        );
         openModal('NEW_ORDER_VIEW');
       }
     } else {
@@ -60,6 +73,7 @@ function CartDrawerView() {
           actualNumber: pendingActualNunber,
           endNumber: pendingEndNumber,
           limitDate: pendingLimitDate,
+          cai: pendingCai,
         } = pendingInvoiceRange;
 
         if (pendingActualNunber < pendingEndNumber) {
@@ -68,6 +82,14 @@ function CartDrawerView() {
               `La fecha límite de emisión fue el ${activeLimitDate}.`
             );
           else {
+            dispatch(
+              setNewOrderTaxInfo({
+                invoiceNumber: pendingActualNunber,
+                limitDate: pendingLimitDate!,
+                cai: pendingCai,
+                range: '',
+              })
+            );
             openModal('NEW_ORDER_VIEW');
           }
         } else {
@@ -98,35 +120,32 @@ function CartDrawerView() {
     amount: subtotal,
   });
 
-  ipcRenderer.on('print-invoice-reply', (_event: any, arg: any) => {
-    console.log(arg); // prints "pong" in the DevTools console
-  });
-
   const handleCheckout = async () => {
     setLoading(true);
 
-    const invoicePrintResponse: InvoicePrintResponse = await ipcRenderer.invoke(
-      'print-invoice',
-      {
-        companyInfo,
-        invoiceRange: activeInvoiceRange,
-        newOrderInfo,
-        newOrderAmounts,
-        newOrderProductDetail: newOrderDetailForInvoce,
-      }
-    );
+    // const invoicePrintResponse: InvoicePrintResponse = await ipcRenderer.invoke(
+    //   'print-invoice',
+    //   {
+    //     companyInfo,
+    //     invoiceRange: activeInvoiceRange,
+    //     newOrderInfo,
+    //     newOrderAmounts,
+    //     newOrderProductDetail: newOrderDetailForInvoce,
+    //   }
+    // );
 
     setLoading(false);
 
-    if (invoicePrintResponse.success) {
-      alert(1);
-    } else {
-      toast.error(invoicePrintResponse.error, {
-        position: 'bottom-center',
-        duration: 5000,
-      });
-    }
+    // if (invoicePrintResponse.success) {
+    //   alert(1);
+    // } else {
+    //   toast.error(invoicePrintResponse.error, {
+    //     position: 'bottom-center',
+    //     duration: 5000,
+    //   });
+    // }
   };
+
   return (
     <>
       <div className="flex h-[70px] items-center justify-between py-2 px-5 sm:px-7">
