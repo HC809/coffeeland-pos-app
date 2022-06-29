@@ -44,6 +44,8 @@ const initialState: NewOrderState = {
     totalExempt: 0,
     totalExonerated: 0,
     totalTax: 0,
+    taxableAmount15: 0,
+    taxableAmount18: 0,
     total: 0,
   },
   newOrderDetail: [],
@@ -73,17 +75,22 @@ const calculateTotalOrderAmounts = (
     });
 
   let totalTax15 = 0;
+  let taxableAmount15 = 0;
   newOrderDetail
     .filter((item) => item.taxName === 'ISV 15%')
     .map((x: IOrderDetail) => {
       totalTax15 = (totalTax15 + x.taxAmount) * x.quantity;
+      console.log(x.sellingPrice);
+      taxableAmount15 = taxableAmount15 + x.sellingPrice;
     });
 
   let totalTax18 = 0;
+  let taxableAmount18 = 0;
   newOrderDetail
     .filter((item) => item.taxName === 'ISV 18%')
     .map((x: IOrderDetail) => {
       totalTax18 = (totalTax18 + x.taxAmount) * x.quantity;
+      taxableAmount18 = taxableAmount18 + x.sellingPrice;
     });
 
   newOrderDetail.map((item: IOrderDetail) => {
@@ -98,6 +105,8 @@ const calculateTotalOrderAmounts = (
     totalTax18: totalTax18,
     totalExempt: totalExemptTax,
     totalExonerated: totalExoneratedTax,
+    taxableAmount15: taxableAmount15,
+    taxableAmount18: taxableAmount18,
     totalTax: amounts.totalTax,
     total: amounts.total,
   };

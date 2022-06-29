@@ -18,22 +18,7 @@ import Image from '@/components/ui/image';
 import { siteSettings } from '@/data/static/site-settings';
 import { removeTaxInfo } from '@/store/taxInfoSlice';
 import { setCloseShift } from '@/store/shiftInfoSlice';
-import ThemeSwitcher from '@/components/ui/theme-switcher';
-
-const AuthorizedMenuItems = [
-  {
-    label: 'Profile',
-    path: routes.profile,
-  },
-  {
-    label: 'Purchases',
-    path: routes.purchases,
-  },
-  {
-    label: 'Password',
-    path: routes.password,
-  },
-];
+import { cancelNewOrder } from '@/store/newOrderSlice';
 
 function AuthorizedMenu({ user }: { user: ILoggedUser }) {
   const dispatch = useAppDispatch();
@@ -74,6 +59,7 @@ function AuthorizedMenu({ user }: { user: ILoggedUser }) {
               type="button"
               className="transition-fill-colors w-full px-5 py-2.5 text-left hover:bg-light-400 dark:hover:bg-dark-600"
               onClick={async () => {
+                await dispatch(cancelNewOrder());
                 await dispatch(setCloseShift());
                 await dispatch(removeTaxInfo());
                 await dispatch(logout());

@@ -1,0 +1,12 @@
+diff --git a/node_modules/electron-pos-printer/dist/post-printer.js b/node_modules/electron-pos-printer/dist/post-printer.js
+index 4d39fbf..27fe5ca 100644
+--- a/node_modules/electron-pos-printer/dist/post-printer.js
++++ b/node_modules/electron-pos-printer/dist/post-printer.js
+@@ -90,6 +90,7 @@ var PosPrinter = /** @class */ (function () {
+                 show: !!options.preview,
+                 webPreferences: {
+                     nodeIntegration: true,
++                    contextIsolation: false,
+                 }
+             });
+             // mainWindow

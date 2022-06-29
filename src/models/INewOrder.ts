@@ -20,6 +20,8 @@ export interface IOrderAmounts {
   totalTax18: number;
   totalExempt: number;
   totalExonerated: number;
+  taxableAmount15: number;
+  taxableAmount18: number;
   totalTax: number;
   total: number;
 }

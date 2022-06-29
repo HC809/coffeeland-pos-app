@@ -49,12 +49,13 @@ app.on('window-all-closed', () => {
 //PRINT INVOICE
 ipcMain.handle('print-invoice', async (event, arg) => {
   const companyInfo = arg.companyInfo;
+  const invoiceNumber = arg.invoiceNumber;
+  const invoiceDate = arg.invoiceDate;
+  const invoiceHour = arg.invoiceHour;
   const newOrderInfo = arg.newOrderInfo;
-  const newOrderAmounts = arg.newOrderAmounts;
+  const newOrderAmounts = arg.newOrderAmountList;
+  const lettersAmount = arg.lettersAmount;
   const newOrderDetail = arg.newOrderProductDetail;
-  const invoiceRange = arg.invoiceRange;
-
-  console.log(companyInfo.name);
 
   const printerOptions = {
     preview: false, // preview in window or print
@@ -99,9 +100,21 @@ ipcMain.handle('print-invoice', async (event, arg) => {
     },
     {
       type: 'text',
-      value: `C.A.I.: ${invoiceRange?.cai}`,
+      value: `C.A.I.: ${newOrderInfo?.cai}`,
       style: `text-align:left;`,
       css: { 'font-size': '12PX', 'padding-top': '10px' },
+    },
+    {
+      type: 'text',
+      value: `FECHA: ${invoiceDate}      HORA: ${invoiceHour}`,
+      style: `text-align:left;`,
+      css: { 'font-size': '12PX' },
+    },
+    {
+      type: 'text',
+      value: `FACTRUA: ${invoiceNumber}`,
+      style: `text-align:left;`,
+      css: { 'font-size': '12PX' },
     },
     {
       type: 'text',
@@ -133,59 +146,105 @@ ipcMain.handle('print-invoice', async (event, arg) => {
       style: `text-align:left;`,
       css: { 'font-size': '12PX' },
     },
-    // {
-    //   type: 'table',
-    //   // style the table
-    //   style: 'border: 1px solid #ddd',
-    //   // list of the columns to be rendered in the table header
-    //   tableHeader: ['', ''],
-    //   // multi dimensional array depicting the rows and columns of the table body
-    //   tableBody: [
-    //     [
-    //       { type: 'text', value: 'CAI', css: { 'font-size': '14px' } },
-    //       {
-    //         type: 'text',
-    //         value: invoiceRange.cai,
-    //         css: { 'font-size': '14px' },
-    //       },
-    //     ],
-    //   ],
-    //   // custom style for the table body
-    //   tableBodyStyle: 'border: 0.5px solid #ddd',
-    // },
-    // {
-    //   type: 'table',
-    //   style: 'border: 1px solid #ddd', // style the table
-    //   // list of the columns to be rendered in the table header
-    //   tableHeader: [{ type: 'text', value: 'Animal' }],
-    //   // multi dimensional array depicting the rows and columns of the table body
-    //   tableBody: [
-    //     [
-    //       { type: 'text', value: 'Cat' },
-    //       { type: 'image', path: './animals/cat.jpg' },
-    //     ],
-    //     [
-    //       { type: 'text', value: 'Dog' },
-    //       { type: 'image', path: './animals/dog.jpg' },
-    //     ],
-    //     [
-    //       { type: 'text', value: 'Horse' },
-    //       { type: 'image', path: './animals/horse.jpg' },
-    //     ],
-    //     [
-    //       { type: 'text', value: 'Pig' },
-    //       { type: 'image', path: './animals/pig.jpg' },
-    //     ],
-    //   ],
-    //   // list of columns to be rendered in the table footer
-    //   tableFooter: [{ type: 'text', value: 'Animal' }, 'Image'],
-    //   // custom style for the table header
-    //   tableHeaderStyle: 'background-color: #000; color: white;',
-    //   // custom style for the table body
-    //   tableBodyStyle: 'border: 0.5px solid #ddd',
-    //   // custom style for the table footer
-    //   tableFooterStyle: 'background-color: #000; color: white;',
-    // },
+    {
+      type: 'table',
+      style: 'border: 1px solid #ddd',
+      tableHeader: ['UDS', 'DESCRIPCION', 'PRECIO'],
+      tableBody: newOrderDetail.map((prod) => {
+        return [prod.quantity, prod.productName, prod.total];
+      }),
+      tableBodyStyle: 'border: 0.5px solid #ddd',
+    },
+    {
+      type: 'text',
+      value: `Subtotal: ${newOrderAmounts.subtotal}`,
+      style: `text-align:right;`,
+      css: { 'font-size': '12PX' },
+    },
+    {
+      type: 'text',
+      value: `Importe Exento: ${newOrderAmounts.totalExempt}`,
+      style: `text-align:right;`,
+      css: { 'font-size': '12PX' },
+    },
+    {
+      type: 'text',
+      value: `Importe Exonerado: ${newOrderAmounts.totalExonerated}`,
+      style: `text-align:right;`,
+      css: { 'font-size': '12PX' },
+    },
+    {
+      type: 'text',
+      value: `Importe Gravado 15%: ${newOrderAmounts.taxableAmount15}`,
+      style: `text-align:right;`,
+      css: { 'font-size': '12PX' },
+    },
+    {
+      type: 'text',
+      value: `Importe Gravado 18%: ${newOrderAmounts.taxableAmount18}`,
+      style: `text-align:right;`,
+      css: { 'font-size': '12PX' },
+    },
+    {
+      type: 'text',
+      value: `Impuestos del 15%: ${newOrderAmounts.totalTax15}`,
+      style: `text-align:right;`,
+      css: { 'font-size': '12PX' },
+    },
+    {
+      type: 'text',
+      value: `Impuestos del 18%: ${newOrderAmounts.totalTax18}`,
+      style: `text-align:right;`,
+      css: { 'font-size': '12PX' },
+    },
+    {
+      type: 'text',
+      value: `Total Impuestos: ${newOrderAmounts.totalTax}`,
+      style: `text-align:right;`,
+      css: { 'font-size': '12PX' },
+    },
+    {
+      type: 'text',
+      value: `TOTAL A PAGAR: ${newOrderAmounts.total}`,
+      style: `text-align:right;`,
+      css: { 'font-size': '12PX' },
+    },
+    {
+      type: 'text',
+      value: `SON: (${lettersAmount})`,
+      style: `text-align:center;`,
+      css: { 'font-size': '12PX', 'padding-top': '10px' },
+    },
+    {
+      type: 'text',
+      value: `*** GRACIAS POR SU VISITA ***`,
+      style: `text-align:center;`,
+      css: { 'font-size': '12PX', 'padding-top': '10px' },
+    },
+    {
+      type: 'text',
+      value: `RANGO AUTORIZADO:`,
+      style: `text-align:center;`,
+      css: { 'font-size': '12PX', 'padding-top': '10px' },
+    },
+    {
+      type: 'text',
+      value: `FECHA LIMITE EMISION: ${newOrderInfo?.limitDate}`,
+      style: `text-align:center;`,
+      css: { 'font-size': '12PX' },
+    },
+    {
+      type: 'text',
+      value: `Exento=E   Gravado=G   Original: Cliente`,
+      style: `text-align:center;`,
+      css: { 'font-size': '12PX' },
+    },
+    {
+      type: 'text',
+      value: `Copia: Obligado Tributario Emisor`,
+      style: `text-align:center;`,
+      css: { 'font-size': '12PX' },
+    },
   ];
 
   return PosPrinter.print(data, printerOptions)
