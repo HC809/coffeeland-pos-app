@@ -2,7 +2,6 @@ import { motion } from 'framer-motion';
 import { staggerTransition } from '@/lib/framer-motion/stagger-transition';
 import { ICategory } from '../../models/ICategory';
 import CategoryCard from './category-card';
-import ShopCardLoader from '../shop/shop-loader';
 import rangeMap from '@/lib/range-map';
 import ItemNotFound from '../ui/item-not-found';
 
@@ -23,15 +22,9 @@ export default function CategoryGrid({
             variants={staggerTransition(0.025)}
             className="grid grid-cols-2 gap-4 xs:grid-cols-[repeat(auto-fill,minmax(185px,1fr))] md:gap-5"
           >
-            {isLoading
-              ? rangeMap(5, (i) => (
-                  <div className="rounded-md bg-light dark:bg-dark-250" key={i}>
-                    <ShopCardLoader uniqueKey={`author-${i}`} />
-                  </div>
-                ))
-              : categories.map((category) => (
-                  <CategoryCard key={category.id} category={category} />
-                ))}
+            {categories.map((category) => (
+              <CategoryCard key={category.id} category={category} />
+            ))}
           </motion.div>
         </div>
       ) : (
