@@ -21,7 +21,7 @@ import '@/assets/css/globals.css';
 
 let persistor = persistStore(store);
 
-validateEnvironmentVariables();
+//validateEnvironmentVariables();
 
 type AppPropsWithLayout = AppProps & {
   Component: NextPageWithLayout;

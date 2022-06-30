@@ -20,6 +20,8 @@ import { setCategories } from '@/store/categoriesSlice';
 import { setProducts } from '@/store/productsSlice';
 import { setTaxInfo } from '@/store/taxInfoSlice';
 import { setCompanyInfo } from '@/store/generalInfoSlice';
+import { AxiosError } from 'axios';
+import { getAxiosErrorMessage } from '@/helpers/manageAxiosError';
 
 export interface IFormValues {
   invoicePointOption: IReactSelectOption;
@@ -65,7 +67,16 @@ export default function SelectInvoicePointForm() {
           });
 
           setInvoicePointDataSelect([...data]);
+        } else {
+          toast.error(
+            `Error al obtener los puntos de emisión: ${response.errorMessage}.`
+          );
         }
+      } catch (error) {
+        //const axiosError = getAxiosErrorMessage(error as AxiosError);
+        toast.error(
+          `Error al obtener los puntos de emisión: Error de conexión.`
+        );
       } finally {
         setLoadingData(false);
       }
@@ -172,8 +183,6 @@ export default function SelectInvoicePointForm() {
       } else {
         toast.error(<b>{errorMessage}</b>);
       }
-
-      //dispatch(setInvoicePointId(values.invoicePointOption.value));
     } catch (error) {
     } finally {
       setLoading(false);

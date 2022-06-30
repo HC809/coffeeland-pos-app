@@ -6,9 +6,7 @@ const environmentVariablesSchema = yup.object().shape({
     .string()
     .oneOf(['development', 'production'])
     .default('development'),
-  NEXT_PUBLIC_REST_API_ENDPOINT: yup.string().required(),
-  NEXT_PUBLIC_WEBSITE_URL: yup.string().required(),
-  NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY: yup.string().required(),
+  NEXT_PUBLIC_COFFEELAND_API_ENPOINT: yup.string().required(),
 });
 
 export function validateEnvironmentVariables() {
@@ -26,9 +24,7 @@ export function validateEnvironmentVariables() {
     )
     .catch(function (err) {
       throw new Error(
-        `Please set the following environment variables: ${err.errors.join(
-          ', '
-        )}`
+        `Validar las siguientes variables de entorno: ${err.errors.join(', ')}`
       );
     });
 }
